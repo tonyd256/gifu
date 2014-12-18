@@ -13,8 +13,8 @@ public class AnimatedView: UIView {
     return !displayLink.paused
   }
 
-  public func setAnimatedFramesWithData(data: NSData) {
-    curry(prepareFrames) <^> CGImageSourceCreateWithData(data, nil) <*> frame.size
+  public func setAnimatedFrames(frames: [AnimatedFrame]) {
+    self.frames = frames
     attachDisplayLink()
     pauseAnimation()
   }
@@ -30,20 +30,6 @@ public class AnimatedView: UIView {
       timeSinceLastUpdate -= frame.duration
       currentFrameIndex = ++currentFrameIndex % frames.count
       layer.contents = frames[currentFrameIndex].image?.CGImage
-    }
-  }
-
-  private func prepareFrames(imageSource: CGImageSourceRef, size: CGSize) {
-    let numberOfFrames = Int(CGImageSourceGetCount(imageSource))
-    frames.reserveCapacity(numberOfFrames)
-
-    frames = reduce(0..<numberOfFrames, frames) { accum, index in
-      let frameDuration = CGImageSourceGIFFrameDuration(imageSource, index)
-      let frameImageRef = CGImageSourceCreateImageAtIndex(imageSource, UInt(index), nil)
-      let frame = UIImage(CGImage: frameImageRef)?.resize(size)
-      let animatedFrame = AnimatedFrame(image: frame, duration: frameDuration)
-
-      return accum + [animatedFrame]
     }
   }
 

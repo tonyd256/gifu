@@ -11,7 +11,7 @@ class ViewController: UIViewController {
 
     let path = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("mugen.gif")
     if let data = NSData(contentsOfFile: path) {
-      animatedView.setAnimatedFramesWithData(data)
+      animatedView.setAnimatedFrames(AnimatedFrame.createWithData(data, size: animatedView.frame.size))
       animatedView.resumeAnimation()
     }
     
